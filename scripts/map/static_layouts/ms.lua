@@ -1,0 +1,213 @@
+return {
+  version = "1.1",
+  luaversion = "5.1",
+  tiledversion = "1.1.1",
+  orientation = "orthogonal",
+  renderorder = "right-down",
+  width = 8,
+  height = 6,
+  tilewidth = 64,
+  tileheight = 64,
+  nextobjectid = 15,
+  properties = {},
+  tilesets = {
+    {
+      name = "ground",
+      firstgid = 1,
+      filename = "../../../../../../../../../../Users/Karel/Desktop/screecher/layout_source/dont_starve/ground.tsx",
+      tilewidth = 64,
+      tileheight = 64,
+      spacing = 0,
+      margin = 0,
+      image = "../../../../../../../../../../Users/Karel/Desktop/screecher/layout_source/dont_starve/tiles.png",
+      imagewidth = 512,
+      imageheight = 128,
+      tileoffset = {
+        x = 0,
+        y = 0
+      },
+      grid = {
+        orientation = "orthogonal",
+        width = 64,
+        height = 64
+      },
+      properties = {},
+      terrains = {},
+      tilecount = 16,
+      tiles = {}
+    }
+  },
+  layers = {
+    {
+      type = "tilelayer",
+      name = "BG_TILES",
+      x = 0,
+      y = 0,
+      width = 8,
+      height = 6,
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      properties = {},
+      encoding = "base64",
+      compression = "zlib",
+      data = "eJxjYIAANiSMDtiwYHQ5VigmVx6X+YTcBgBDIACr"
+    },
+    {
+      type = "objectgroup",
+      name = "FG_OBJECTS",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      draworder = "topdown",
+      properties = {},
+      objects = {
+        {
+          id = 1,
+          name = "",
+          type = "firepit",
+          shape = "rectangle",
+          x = 191,
+          y = 189,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 3,
+          name = "",
+          type = "log_chunk",
+          shape = "rectangle",
+          x = 239,
+          y = 177,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 4,
+          name = "",
+          type = "sitting_log",
+          shape = "rectangle",
+          x = 224,
+          y = 137,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 5,
+          name = "",
+          type = "log_chunk",
+          shape = "rectangle",
+          x = 139,
+          y = 146,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 6,
+          name = "",
+          type = "batteries",
+          shape = "rectangle",
+          x = 106,
+          y = 251,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 7,
+          name = "",
+          type = "tent_cone",
+          shape = "rectangle",
+          x = 262,
+          y = 48,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 9,
+          name = "",
+          type = "flashlightloot",
+          shape = "rectangle",
+          x = 103,
+          y = 166,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 10,
+          name = "",
+          type = "log_chunk",
+          shape = "rectangle",
+          x = 251,
+          y = 190,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 12,
+          name = "",
+          type = "log_chunk",
+          shape = "rectangle",
+          x = 258,
+          y = 177,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 13,
+          name = "",
+          type = "log_chunk",
+          shape = "rectangle",
+          x = 264,
+          y = 191,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 14,
+          name = "",
+          type = "log_chunk",
+          shape = "rectangle",
+          x = 252,
+          y = 205,
+          width = 0,
+          height = 0,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        }
+      }
+    }
+  }
+}
