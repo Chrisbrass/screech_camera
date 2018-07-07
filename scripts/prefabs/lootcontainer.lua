@@ -31,14 +31,11 @@ local function OnGetFlashlight(inst)
 	player.components.inventory:Equip(flashlight)
 	flashlight.components.flicker:ToggleFlashlight() --Make the flashlight off to start (to train toggle)
 
-	player:ListenForEvent("flashlighton", function() player:PushEvent("flashlighton") end)
-	player:ListenForEvent("flashlighttoggleon", function() player:PushEvent("flashlighttoggleon") end)
-    player:ListenForEvent("flashlightoff", function() player:PushEvent("flashlightoff") end)
-    player:ListenForEvent("fuellow", function() player:PushEvent("fuellow") end)
-    player:ListenForEvent("fuelnotlow", function() player:PushEvent("fuelnotlow") end)
-    player.AnimState:SetBuild("camp_leader_build")
-    player.AnimState:SetBank("camper")
-    player:SetStateGraph("SGcamperbeta3") 
+	player:ListenForEvent("flashlighton", function() player:PushEvent("flashlighton") end, player.FlashlightEnt())
+	player:ListenForEvent("flashlighttoggleon", function() player:PushEvent("flashlighttoggleon") end, player.FlashlightEnt())
+    player:ListenForEvent("flashlightoff", function() player:PushEvent("flashlightoff") end, player.FlashlightEnt())
+    player:ListenForEvent("fuellow", function() player:PushEvent("fuellow") end, player.FlashlightEnt())
+    player:ListenForEvent("fuelnotlow", function() player:PushEvent("fuelnotlow") end, player.FlashlightEnt())
     inst.AnimState:SetMultColour(0.2,0.2,0.2,1)
 
     if player.savedbatteries ~= nil then
@@ -57,7 +54,7 @@ local function OnActivate(inst)
 	inst.name = ""
 
 	local player = ThePlayer
-	local flashlight_ent = c_find("flashlight")
+	local flashlight_ent = player.FlashlightEnt()
 	if player and flashlight_ent then
 		local encountermgr = player.components.scarymodencountermanager
 		local adjustedlootdrop = encountermgr:GetLootDrop(flashlight_ent.components.lightfueldimmer.fuellevel/TUNING.MAX_FUEL_LEVEL)
@@ -154,9 +151,10 @@ local function OnGetBatteries(inst)
 	inst.name = ""
 
 	local player = ThePlayer
-	local flashlight_ent = c_find("flashlight")
+	local flashlight_ent = player.FlashlightEnt()
 	inst.SoundEmitter:PlaySound("scary_mod/stuff/battery_pickup")
 	--player.HUD.note:DisplayImage("images/hud/battery.xml", "battery.tex", {imagetype="batteries"})
+	
 
 	if flashlight_ent then
 		-- Dip the fuel consumption rate super briefly so that the HUD pulses

@@ -535,21 +535,27 @@ local events =
         if inst.sg:HasStateTag("busy") then
             return
         end
+        local is_attacking = inst.sg:HasStateTag("attack")
+        local is_busy = inst.sg:HasStateTag("busy")
+        if is_attacking or is_busy then return end
         local is_moving = inst.sg:HasStateTag("moving")
+        local is_running = inst.sg:HasStateTag("running")
         local should_move = inst.components.locomotor:WantsToMoveForward()
+        local should_run = inst.components.locomotor:WantsToRun()
 
-        if inst.sg:HasStateTag("bedroll") or inst.sg:HasStateTag("tent") or inst.sg:HasStateTag("waking") then -- wakeup on locomote
-            if inst.sleepingbag ~= nil and inst.sg:HasStateTag("sleeping") then
-                inst.sleepingbag.components.sleepingbag:DoWakeUp()
-                inst.sleepingbag = nil
+        if is_moving and not should_move then
+            if is_running then
+                inst.sg:GoToState("run_stop")
+            else
+                inst.sg:GoToState("walk_stop")
             end
-        elseif is_moving and not should_move then
-            inst.sg:GoToState("run_stop")
-        elseif not is_moving and should_move then
-            inst.sg:GoToState("run_start")
-        elseif data.force_idle_state and not (is_moving or should_move or inst.sg:HasStateTag("idle")) then
-            inst.sg:GoToState("idle")
-        end
+        elseif (not is_moving and should_move) or (is_moving and should_move and is_running ~= should_run) then
+            if should_run then
+                inst.sg:GoToState("run_start")
+            else
+                inst.sg:GoToState("walk_start")
+            end
+        end 
     end),
 
     EventHandler("blocked", function(inst, data)
@@ -1407,6 +1413,95 @@ local states =
 
     },
 
+    State{
+        name = "walk",
+        tags = {"moving", "walking", "canrotate"},
+
+        onenter = function(inst) 
+            inst.components.locomotor:WalkForward()
+            if inst.components.locomotor.walkspeed < 0 then
+                if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) ~= nil then
+                    inst.AnimState:PlayAnimation("leader_walk_loop_bk")
+                else
+                    inst.AnimState:PlayAnimation("leader_walk_loop_bk")
+                end
+            end
+
+        end,
+
+        onupdate = function(inst)
+            inst.components.locomotor:WalkForward()
+        end,
+
+        timeline=
+        {
+            TimeEvent(9*FRAMES, function(inst)
+                inst.sg.mem.foosteps = inst.sg.mem.foosteps + 1
+                PlayFootstep(inst, inst.sg.mem.foosteps < 5 and 1 or .6)
+                DoFoleySounds(inst)
+            end),
+            TimeEvent(20*FRAMES, function(inst)
+                inst.sg.mem.foosteps = inst.sg.mem.foosteps + 1
+                PlayFootstep(inst, inst.sg.mem.foosteps < 5 and 1 or .6)
+                DoFoleySounds(inst)
+            end),
+        },
+
+        events=
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("walk") end ),
+        },
+    },
+
+
+    State{
+        name = "walk_start",
+        tags = {"moving", "walking", "canrotate"},
+
+        onenter = function(inst)
+            inst:PushEvent("playermoving")
+            inst.components.locomotor:WalkForward()
+            if inst.components.locomotor.runspeed < 0 then
+                if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) ~= nil then
+                    inst.AnimState:PlayAnimation("leader_walk_pre_bk_nolight")
+                else
+                    inst.AnimState:PlayAnimation("leader_walk_pre_bk")
+                end
+            end
+            inst.sg.mem.foosteps = 0
+        end,
+
+        onupdate = function(inst)
+            inst.components.locomotor:WalkForward()
+        end,
+
+        events=
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("walk") end ),
+        },
+    },
+
+
+     State{
+    
+        name = "walk_stop",
+        tags = {"canrotate", "idle"},
+        
+        onenter = function(inst) 
+            inst.components.locomotor:Stop()
+            if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) ~= nil then
+                inst.AnimState:PlayAnimation("leader_walk_pst_bk_nolight")
+            else
+                inst.AnimState:PlayAnimation("leader_walk_pst_bk")
+            end
+        end,
+        
+        events=
+        {   
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),        
+        },
+        
+    },    
 
 
     State{
@@ -3609,6 +3704,8 @@ local states =
             inst.sg:SetTimeout(timeout or 1)
             inst.components.locomotor:Stop()
             if lootcontainer.prefab ~= "generator" then
+                inst.HUD:Hide()
+                inst.components.playercontroller:Enable(false)
                 inst.SoundEmitter:PlaySound("scary_mod/stuff/do_stuff", "make")
                 inst.AnimState:PlayAnimation("leader_search_pre")
                 inst.AnimState:PushAnimation("leader_search_loop", true)
@@ -3617,6 +3714,8 @@ local states =
                 inst:DoTaskInTime(18*FRAMES, function()
                     inst:PushEvent("pullinggeneratorcord")
                 end)
+                inst.HUD:Hide()
+                inst.components.playercontroller:Enable(false)
                 inst.AnimState:PlayAnimation("leader_pull_pre")
                 inst.AnimState:PushAnimation("leader_pull", true)
             end
@@ -3644,14 +3743,20 @@ local states =
             inst.SoundEmitter:KillSound("make")
             if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) == nil and lootcontainer.prefab ~= "generator" then
                 inst.AnimState:PlayAnimation("leader_search_pst_nolight")
+                inst.HUD:Show()
+                inst.components.playercontroller:Enable(true)
             else
                 inst.AnimState:PlayAnimation("leader_pull_pst")
+                inst.HUD:Show()
+                inst.components.playercontroller:Enable(true)
             end
 
             if lootcontainer.prefab ~= "generator" then
                 inst.AnimState:PlayAnimation("leader_search_pst")
             else
                 inst.AnimState:PlayAnimation("leader_pull_pst")
+                inst.HUD:Show()
+                inst.components.playercontroller:Enable(true)
             end
 
             if inst.sg.statemem.actionmeter then
@@ -4670,6 +4775,16 @@ local states =
                 inst.AnimState:PlayAnimation("leader_run_pre_up_nolight")
             end
             inst.sg.mem.footsteps = 0
+
+            if inst.components.locomotor.walkspeed < 0 then
+                if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) ~= nil then
+                    inst.AnimState:PlayAnimation("leader_walk_pre_bk_nolight")
+                else
+                    inst.AnimState:PlayAnimation("leader_walk_pre_bk")
+                end
+            end
+
+            
         end,
 
 
@@ -4731,141 +4846,26 @@ local states =
         timeline =
         {
             --unmounted
-            TimeEvent(7 * FRAMES, function(inst)
+            TimeEvent(9 * FRAMES, function(inst)
                 if inst.sg.statemem.normal then
                     DoRunSounds(inst)
                     DoFoleySounds(inst)
                 end
             end),
-            TimeEvent(15 * FRAMES, function(inst)
+            TimeEvent(20 * FRAMES, function(inst)
                 if inst.sg.statemem.normal then
                     DoRunSounds(inst)
                     DoFoleySounds(inst)
                 end
             end),
 
-            --careful
-            --Frame 11 shared with heavy lifting below
-            --[[TimeEvent(11 * FRAMES, function(inst)
-                if inst.sg.statemem.careful then
-                    DoRunSounds(inst)
-                    DoFoleySounds(inst)
-                end
-            end),]]
-            TimeEvent(26 * FRAMES, function(inst)
-                if inst.sg.statemem.careful then
-                    DoRunSounds(inst)
-                    DoFoleySounds(inst)
-                end
-            end),
 
-            --sandstorm
-            --Frame 12 shared with groggy below
-            --[[TimeEvent(12 * FRAMES, function(inst)
-                if inst.sg.statemem.sandstorm then
-                    DoRunSounds(inst)
-                    DoFoleySounds(inst)
-                end
-            end),]]
-            TimeEvent(23 * FRAMES, function(inst)
-                if inst.sg.statemem.sandstorm then
-                    DoRunSounds(inst)
-                    DoFoleySounds(inst)
-                end
-            end),
 
-            --groggy
-            TimeEvent(1 * FRAMES, function(inst)
-                if inst.sg.statemem.groggy then
-                    DoRunSounds(inst)
-                    DoFoleySounds(inst)
-                end
-            end),
-            TimeEvent(12 * FRAMES, function(inst)
-                if inst.sg.statemem.groggy or
-                    inst.sg.statemem.sandstorm then
-                    DoRunSounds(inst)
-                    DoFoleySounds(inst)
-                end
-            end),
-
-            --heavy lifting
-            TimeEvent(11 * FRAMES, function(inst)
-                if inst.sg.statemem.heavy then
-                    PlayFootstep(inst, inst.sg.mem.footsteps > 3 and .6 or 1, true)
-                    DoFoleySounds(inst)
-                    inst.sg.mem.footsteps = inst.sg.mem.footsteps + 1
-                elseif inst.sg.statemem.sandstorm
-                    or inst.sg.statemem.careful then
-                    DoRunSounds(inst)
-                    DoFoleySounds(inst)
-                end
-            end),
-            TimeEvent(36 * FRAMES, function(inst)
-                if inst.sg.statemem.heavy then
-                    PlayFootstep(inst, inst.sg.mem.footsteps > 3 and .6 or 1, true)
-                    DoFoleySounds(inst)
-                    if inst.sg.mem.footsteps > 12 then
-                        inst.sg.mem.footsteps = math.random(4, 6)
-                        inst:PushEvent("encumberedwalking")
-                    else
-                        inst.sg.mem.footsteps = inst.sg.mem.footsteps + 1
-                    end
-                end
-            end),
-
-            --mounted
-            TimeEvent(0 * FRAMES, function(inst)
-                if inst.sg.statemem.riding then
-                    DoMountedFoleySounds(inst)
-                end
-            end),
-            TimeEvent(5 * FRAMES, function(inst)
-                if inst.sg.statemem.riding then
-                    DoRunSounds(inst)
-                end
-            end),
         },
 
         events =
         {
-            EventHandler("gogglevision", function(inst, data)
-                if data.enabled then
-                    if inst.sg.statemem.sandstorm then
-                        inst.sg:GoToState("run")
-                    end
-                elseif not (inst.sg.statemem.riding or
-                            inst.sg.statemem.heavy or
-                            inst.sg.statemem.sandstorm or
-                            inst:GetSandstormLevel() < TUNING.SANDSTORM_FULL_LEVEL) then
-                    inst.sg:GoToState("run")
-                end
-            end),
-            EventHandler("sandstormlevel", function(inst, data)
-                if data.level < TUNING.SANDSTORM_FULL_LEVEL then
-                    if inst.sg.statemem.sandstorm then
-                        inst.sg:GoToState("run")
-                    end
-                elseif not (inst.sg.statemem.riding or
-                            inst.sg.statemem.heavy or
-                            inst.sg.statemem.sandstorm or
-                            inst.components.playervision:HasGoggleVision()) then
-                    inst.sg:GoToState("run")
-                end
-            end),
-            EventHandler("carefulwalking", function(inst, data)
-                if not data.careful then
-                    if inst.sg.statemem.careful then
-                        inst.sg:GoToState("run")
-                    end
-                elseif not (inst.sg.statemem.riding or
-                            inst.sg.statemem.heavy or
-                            inst.sg.statemem.sandstorm or
-                            inst.sg.statemem.groggy or
-                            inst.sg.statemem.careful) then
-                    inst.sg:GoToState("run")
-                end
-            end),
+            EventHandler("animover", function(inst) inst.sg:GoToState("run") end ),
         },
 
         ontimeout = function(inst)

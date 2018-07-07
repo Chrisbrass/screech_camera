@@ -1,3 +1,5 @@
+
+
 local function PlaySounds()
 	local TheWorld = GLOBAL.TheWorld
 	local TheFrontEnd = GLOBAL.TheFrontEnd
@@ -26,11 +28,17 @@ AddPlayerPostInit(function(player)
 			player.AnimState:SetBuild("camp_leader_build")
 		end)
 		player.AnimState:SetBank("camper")
-		player:SetStateGraph("SGcamperbeta3")
+		player:SetStateGraph("SGcamperbeta7")
 	end
 
 end)
 
+AddPrefabPostInit("wilson", function(inst)
+	EQUIPSLOTS = GLOBAL.EQUIPSLOTS
+	inst.FlashlightEnt = function()
+		return inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+	end
+end)
 
 
 
