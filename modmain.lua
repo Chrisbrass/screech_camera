@@ -96,6 +96,7 @@ Assets =
 -- Set up some tuning values which will be used be our custom creatures and
 -- components.
 
+modimport("init/prepare_player_world")
 
 local function toggle_flashlight(act)
 	if act.target.flashlightt == nil then
@@ -107,21 +108,7 @@ local function toggle_flashlight(act)
 	end
 end
 
-local function PlaySounds()
-	local TheWorld = GLOBAL.TheWorld
-	local TheFrontEnd = GLOBAL.TheFrontEnd
-	TheWorld.components.ambientsound:SetReverbPreset("woods")
-    TheFrontEnd:GetSound():PlaySound("scary_mod/music/gamemusic", "gamemusic")
-    		
-end
-AddSimPostInit(PlaySounds)
 
-AddPlayerPostInit(function(player)
-	player:AddTag("camper")
-	player.AnimState:SetBuild("camp_leader_build")
-    player.AnimState:SetBank("camper")
-    player:SetStateGraph("SGcamperbeta3") 
-end)
 
 
 
@@ -257,7 +244,7 @@ end)
 GLOBAL.require("debugkeys")
 GLOBAL.require("consolecommands")
 GLOBAL.AddGameDebugKey(GLOBAL.KEY_F, function(down)
-	local player = GLOBAL.GetPlayer()
+	local player = GLOBAL.ThePlayer
 	local flashlight_ent = player.FlashlightEnt()
 	if flashlight_ent == nil then
 		flashlight_ent = GLOBAL.SpawnPrefab("flashlight")
