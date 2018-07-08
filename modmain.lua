@@ -82,8 +82,8 @@ Assets =
 	Asset("IMAGE", "images/screecher_logo.tex"),
 	Asset("ATLAS", "images/screecher_logo.xml"),]]
 
-	--[[Asset("IMAGE", "colour_cubes/screecher_cc.tex"),
-	Asset("IMAGE", "colour_cubes/screecher_cc_red_cc.tex"),]]
+	Asset("IMAGE", "images/colour_cubes/screecher_cc.tex"),
+	Asset("IMAGE", "images/colour_cubes/screecher_cc_red_cc.tex"),
 
 	Asset("IMAGE", "images/leader.tex"),
 	Asset("ATLAS", "images/leader.xml"),
@@ -101,6 +101,8 @@ modimport("init/tuning.lua")
 if SERVER_SIDE then --Server only
 	modimport("init/prepare_player_world.lua")
 end
+
+modimport("scripts/screecher_network.lua")
 
 local TUNING = _G.TUNING
 
