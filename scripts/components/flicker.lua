@@ -124,7 +124,7 @@ end
 function Flicker:OnUpdate(dt)
 		-- The black frame supersedes all other behaviour
     local encountermgr = ThePlayer.components.scarymodencountermanager
-    if encountermgr and not encountermgr.gameover then
+    if encountermgr then
     	if self.ison and self.nextframeblack > 0 then
     		self.nextframeblack = self.nextframeblack -1
     		self:SetIntensity(0)
