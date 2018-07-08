@@ -1497,10 +1497,10 @@ local states =
         {   
             
             EventHandler("animover", function(inst) 
-                if inst.AnimState:AnimDone() and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) == nil then
-                    inst.sg:GoToState("idle")
-                else
+                if inst.AnimState:AnimDone() and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) ~= nil then
                     inst.sg:GoToState("idle_flashlight")
+                else
+                    inst.sg:GoToState("idle")
                 end
             end),        
         },
