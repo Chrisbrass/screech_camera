@@ -10,7 +10,7 @@ end)
 
 AddPlayersPostInit(function(inst)
 	inst:AddTag("camper")
-	inst:SetStateGraph("SGcamperbeta7")
+	inst:SetStateGraph("SGcamperbeta")
 	
 	inst.FlashlightEnt = function()
 		return inst.components.inventory and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
