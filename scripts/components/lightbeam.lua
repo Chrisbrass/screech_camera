@@ -1,3 +1,4 @@
+--This one needs to be fully reworked...
 local LightBeam = Class(function(self, inst)
 	self.inst = inst
 
@@ -20,7 +21,8 @@ local LightBeam = Class(function(self, inst)
 	self.timetransitioning = 0
 	self.transitionduration = 0.3
 	self.pitchadjustment = 0
-
+	--ThePlayer dosen't exsist on the server side. Only on clients, so server components must have another way to find player
+	--[[
 	self.inst:ListenForEvent("searchingcontainer", function() 
 		self.standing = false 
 		self.transitioning = true
@@ -40,7 +42,7 @@ local LightBeam = Class(function(self, inst)
 		end
 	end, ThePlayer)
 
-	self.inst:ListenForEvent("camerapitch", function(inst, data)  self.pitchadjustment = (-0.5 + data.pitch) * TUNING.PITCH_ADJUSTMENT_MULTIPLIER end, ThePlayer)
+	self.inst:ListenForEvent("camerapitch", function(inst, data)  self.pitchadjustment = (-0.5 + data.pitch) * TUNING.PITCH_ADJUSTMENT_MULTIPLIER end, ThePlayer)]]
 
 	self.inst:StartUpdatingComponent(self)
 
