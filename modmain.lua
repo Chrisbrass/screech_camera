@@ -102,6 +102,19 @@ if SERVER_SIDE then --Server only
 	modimport("init/prepare_player_world.lua")
 end
 
+--This one must be set on the client AND server
+AddWorldPostInit(function(w)
+    w:PushEvent("overrideambientlighting", _G.Point(0, 0, 0))
+end)
+
+if not DEDICATED_SIDE then --Dedicated servers don't need to add this component
+	AddPlayersPostInit(function(isnt)
+		if not inst.components.characterbreathing then
+			isnt:AddComponent("characterbreathing")
+		end
+	end
+end
+
 modimport("scripts/screecher_network.lua")
 
 local TUNING = _G.TUNING
@@ -186,5 +199,8 @@ end
 AddAction(toggleflashlightact)
 AddStategraphActionHandler("camperbeta", ActionHandler(toggleflashlightact, "doflashlighttoggle"))
 
+-- Rename the stinger played on "goinsane" to null. Throws an FMOD error in log
+-- But it prevents the stinger from playing.  Hacky, but works...
+RemapSoundEvent("dontstarve/sanity/gonecrazy_stinger", "")
 
 
