@@ -18,11 +18,11 @@ AddWorldPostInit(function(w)
 end)
 
 if not DEDICATED_SIDE then --Dedicated servers don't need to add this component
-	AddPlayersPostInit(function(isnt)
+	AddPlayersPostInit(function(inst)
 		if not inst.components.characterbreathing then
-			isnt:AddComponent("characterbreathing")
+			inst:AddComponent("characterbreathing")
 		end
-	end
+	end)
 end
 
 modimport("scripts/screecher_network.lua")
