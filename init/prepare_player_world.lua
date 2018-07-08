@@ -1,46 +1,29 @@
+local EQUIPSLOTS = _G.EQUIPSLOTS
 
-
-local function PlaySounds()
-	local TheWorld = GLOBAL.TheWorld
-	local TheFrontEnd = GLOBAL.TheFrontEnd
-	TheWorld.components.ambientsound:SetReverbPreset("woods")
+AddWorldPostInit(function(w)
+	local TheFrontEnd = _G.TheFrontEnd
+	w.components.ambientsound:SetReverbPreset("woods")
     TheFrontEnd:GetSound():PlaySound("scary_mod/music/gamemusic", "gamemusic")
-    		
-end
-AddSimPostInit(PlaySounds)
-
-
-
-
-AddPlayerPostInit(function(player)
-	player:AddTag("camper")
-	
-
-	player:DoTaskInTime(.1, function()
-		local defskin = player.prefab
-		player.components.skinner:ClearAllClothing()
-		player.AnimState:SetSkin(defskin)
-	end)
-	
-
-	if player:HasTag("player") then
-		player:DoTaskInTime(.3, function()
-			player.AnimState:SetBuild("camp_leader_build")
-		end)
-		player.AnimState:SetBank("camper")
-		player:SetStateGraph("SGcamperbeta7")
-	end
-
 end)
 
-AddPrefabPostInit("wilson", function(inst)
-	EQUIPSLOTS = GLOBAL.EQUIPSLOTS
+AddPlayersPostInit(function(inst)
+	inst:AddTag("camper")
+	inst:SetStateGraph("SGcamperbeta7")
+	
 	inst.FlashlightEnt = function()
-		return inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+		return inst.components.inventory and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 	end
 end)
 
-
+AddPlayersAfterInit(function(inst)
+	if inst.components.skinner then
+		inst.components.skinner:ClearAllClothing()
+	end
+	
+	inst.AnimState:SetSkin(inst.prefab)
+	inst.AnimState:SetBank("camper")
+	inst.AnimState:SetBuild("camp_leader_build")
+end)
 
 AddPrefabPostInit("multiplayer_portal", function(inst)
 	inst:DoTaskInTime(0, inst.Remove)

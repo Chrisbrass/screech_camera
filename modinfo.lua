@@ -1,4 +1,4 @@
-name = "Screecher Pre-Alpha"
+name = " Screecher Pre-Alpha"
 version = " 0.0.3"
 updatelog = " - "
 codename = " Screech"
