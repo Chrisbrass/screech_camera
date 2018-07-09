@@ -186,6 +186,7 @@ local AllPlayers = _G.AllPlayers
 local rawget = _G.rawget
 local getmetatable = _G.getmetatable
 local unpack = _G.unpack
+local resolvefilepath = _G.resolvefilepath
 
 --Базовые (библиотечные) вспомогательные функции для эффективного перехвата
 
@@ -582,6 +583,7 @@ LoadOption = LoadOption,
 rawget = rawget,
 getmetatable = getmetatable,
 unpack = unpack,
+resolvefilepath = resolvefilepath,
 
 GetOption = GetOption,
 RegisterPlayersUpdate = RegisterPlayersUpdate,

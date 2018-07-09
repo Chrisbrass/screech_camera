@@ -1,4 +1,4 @@
-_version = "1.07"
+_version = "1.071"
 _G=GLOBAL
 if _silence == nil then
 	print(_version,modinfo.name) --Show current version of lib

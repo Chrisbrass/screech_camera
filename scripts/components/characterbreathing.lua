@@ -2,19 +2,19 @@ local CharacterBreathing = Class(function(self, inst)
     self.inst = inst
 
     self.inst:ListenForEvent( "change_breathing", function(it, data)
-        self:StartBreathing( data.intensity, data.duration )
-    end, ThePlayer)
+        self:StartBreathing(data.intensity, data.duration)
+    end, self.inst)
     
     self.inst:ListenForEvent( "stop_breathing", function(it, data)
         self:StopBreathing()
-    end, ThePlayer)
+    end, self.inst)
 
     self.inst:ListenForEvent( "change_default_breathing", function(it, data)
         self.default_intensity = data.intensity
         if self.default_intensity > self.intensity then
             self:StartBreathing( self.default_intensity, -1 )
         end
-    end, ThePlayer)
+    end, self.inst)
 
     self.inst:StartUpdatingComponent(self)
 
@@ -32,13 +32,13 @@ function CharacterBreathing:StartBreathing( intensity, duration )
     end
 
     if self.intensity ~= intensity then
-        ThePlayer.SoundEmitter:KillSound("breathing")
+        self.inst.SoundEmitter:KillSound("breathing")
         if intensity == 1 then
-            ThePlayer.SoundEmitter:PlaySound("scary_mod/stuff/breathing", "breathing")
+            self.inst.SoundEmitter:PlaySound("scary_mod/stuff/breathing", "breathing")
         elseif intensity == 2 then
-            ThePlayer.SoundEmitter:PlaySound("scary_mod/stuff/breathing_med", "breathing")
+            self.inst.SoundEmitter:PlaySound("scary_mod/stuff/breathing_med", "breathing")
         else
-            ThePlayer.SoundEmitter:PlaySound("scary_mod/stuff/breathing_fast", "breathing")
+            self.inst.SoundEmitter:PlaySound("scary_mod/stuff/breathing_fast", "breathing")
         end
     end
 
@@ -48,7 +48,7 @@ function CharacterBreathing:StartBreathing( intensity, duration )
 end
 
 function CharacterBreathing:StopBreathing()
-    ThePlayer.SoundEmitter:KillSound("breathing")
+    self.inst.SoundEmitter:KillSound("breathing")
     self.inst:StopUpdatingComponent(self)
 end
 

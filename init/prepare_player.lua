@@ -1,6 +1,5 @@
 local EQUIPSLOTS = _G.EQUIPSLOTS
 
-
 AddPlayersPostInit(function(inst)
 	inst:AddTag("camper")
 	inst:SetStateGraph("SGcamperbeta")
@@ -15,7 +14,10 @@ AddPlayersAfterInit(function(inst)
 		inst.components.skinner:ClearAllClothing()
 	end
 	
-	inst.components.characterbreathing:StartBreathing( 1, 1 )
+	if inst.components.health then
+		inst.components.health:SetInvincible(true)
+	end
+	
 	inst.AnimState:SetSkin(inst.prefab)
 	inst.AnimState:SetBank("camper")
 	inst.AnimState:SetBuild("camp_leader_build")
